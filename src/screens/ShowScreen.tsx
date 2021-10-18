@@ -1,18 +1,39 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useContext } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Context as BlogContext } from '../context/BlogProvider';
+import { BlogPost } from '../models/Blog';
+import { RootStackParamList } from '../models/Screens';
 
-interface Props {
-    
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'Show'>;
 
-const ShowScreen = (props: Props) => {
-    return (
-        <View>
-            <Text>Show Screen</Text>
-        </View>
-    )
-}
+const ShowScreen: React.FC<Props> = ({ route }) => {
+  const { id } = route.params;
+  const { state } = useContext<any>(BlogContext);
 
-export default ShowScreen
+  const blogPost: BlogPost = state.find(
+    (blogPost: BlogPost) => blogPost.id === id
+  );
 
-const styles = StyleSheet.create({})
+  return (
+    <View style={styles.container}>
+      <Text>{blogPost.title}</Text>
+      <Text>{blogPost.content}</Text>
+    </View>
+  );
+};
+
+export default ShowScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginVertical: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+});
