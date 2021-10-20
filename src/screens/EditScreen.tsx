@@ -5,46 +5,41 @@ import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Context as BlogContext } from '../context/BlogProvider';
 import { RootStackParamList } from '../models/Screens';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Create'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'Edit'>;
 
-const CreateScreen: React.FC<Props> = ({ navigation }) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const { addPost } = useContext(BlogContext);
+const EditScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { state, editPost } = useContext(BlogContext);
+  const { id } = route.params;
+  const post = state.find((post) => post.id === id);
+  const [title, setTitle] = useState(post?.title ?? '');
+  const [content, setContent] = useState(post?.content ?? '');
 
   const addPostHandler = () => {
-    addPost(
-      {
-        id: Math.floor(Math.random() + Date.now()),
-        title,
-        content,
-      },
-      () => {
-        navigation.navigate('Home');
-      }
-    );
+    editPost({ id, title, content }, () => {
+      navigation.navigate('Home');
+    });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Enter Title:</Text>
+      <Text style={styles.label}>Enter New Title:</Text>
       <TextInput
         style={styles.textInput}
         value={title}
         onChangeText={setTitle}
       />
-      <Text style={styles.label}>Enter Content:</Text>
+      <Text style={styles.label}>Enter New Content:</Text>
       <TextInput
         style={styles.textInput}
         value={content}
         onChangeText={setContent}
       />
-      <Button title="Add Blog Post" onPress={addPostHandler} />
+      <Button title="Save Blog Post" onPress={addPostHandler} />
     </View>
   );
 };
 
-export default CreateScreen;
+export default EditScreen;
 
 const styles = StyleSheet.create({
   container: {

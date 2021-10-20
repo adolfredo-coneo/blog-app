@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import {
-  Button,
   FlatList,
   StyleSheet,
   Text,
@@ -11,30 +10,22 @@ import { Feather } from '@expo/vector-icons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Context as BlogContext } from '../context/BlogProvider';
-import { BlogPost } from '../models/Blog';
 import { RootStackParamList } from '../models/Screens';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const IndexScreen: React.FC<Props> = ({ navigation }) => {
-  const { state, addPost, deletePost } = useContext<any>(BlogContext);
-
-  const addPostHandler = () => {
-    addPost({
-      id: Math.floor(Math.random() + Date.now()),
-      title: `New Post ${state.length + 1}`,
-      content: 'New Content',
-    });
-  };
+  const { state, deletePost } = useContext(BlogContext);
 
   return (
     <View>
-      <Button title="Add Blog Post" onPress={addPostHandler} />
       <FlatList
         data={state}
         keyExtractor={(blogPost) => blogPost.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate('Show', { id: item.id })}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Show', { id: item.id })}
+          >
             <View style={styles.row}>
               <Text style={styles.title}>{item.title}</Text>
               <TouchableOpacity onPress={() => deletePost(item.id)}>
@@ -67,3 +58,20 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
+
+export const homeHeaderOptions = ({
+  navigation,
+}: NativeStackScreenProps<any>) => {
+  const addPostHandler = () => {
+    navigation.navigate('Create');
+  };
+
+  return {
+    headerTitle: 'Blog Posts',
+    headerRight: () => (
+      <TouchableOpacity onPress={addPostHandler}>
+        <Feather name="plus" size={30} />
+      </TouchableOpacity>
+    ),
+  };
+};

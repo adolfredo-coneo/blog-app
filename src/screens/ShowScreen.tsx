@@ -1,6 +1,8 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useContext } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { EvilIcons } from '@expo/vector-icons';
+
 import { Context as BlogContext } from '../context/BlogProvider';
 import { BlogPost } from '../models/Blog';
 import { RootStackParamList } from '../models/Screens';
@@ -37,3 +39,18 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
 });
+
+export const showHeaderOptions = ({ navigation, route }: Props) => {
+  const addPostHandler = () => {
+    navigation.navigate('Edit', { id: route.params.id });
+  };
+
+  return {
+    headerTitle: 'Blog Post',
+    headerRight: () => (
+      <TouchableOpacity onPress={addPostHandler}>
+        <EvilIcons name="pencil" size={35} />
+      </TouchableOpacity>
+    ),
+  };
+};
