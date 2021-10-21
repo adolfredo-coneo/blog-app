@@ -1,18 +1,17 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useContext, useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, View } from 'react-native';
 
+import BlogPostForm from '../components/BlogPostForm';
 import { Context as BlogContext } from '../context/BlogProvider';
 import { RootStackParamList } from '../models/Screens';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Create'>;
 
 const CreateScreen: React.FC<Props> = ({ navigation }) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
   const { addPost } = useContext(BlogContext);
 
-  const addPostHandler = () => {
+  const addPostHandler = (title: string, content: string) => {
     addPost(
       {
         id: Math.floor(Math.random() + Date.now()),
@@ -27,19 +26,12 @@ const CreateScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Enter Title:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={title}
-        onChangeText={setTitle}
+      <BlogPostForm
+        titleLabel="Enter Title:"
+        contentLabel="Enter Content:"
+        submitLabel="Add Blog Post"
+        onSubmit={addPostHandler}
       />
-      <Text style={styles.label}>Enter Content:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={content}
-        onChangeText={setContent}
-      />
-      <Button title="Add Blog Post" onPress={addPostHandler} />
     </View>
   );
 };
@@ -50,16 +42,5 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 30,
     marginHorizontal: 20,
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 15,
-  },
-  textInput: {
-    borderColor: 'black',
-    borderWidth: 1,
-    marginBottom: 20,
-    padding: 5,
-    fontSize: 18,
   },
 });

@@ -1,7 +1,8 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useContext, useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, View } from 'react-native';
 
+import BlogPostForm from '../components/BlogPostForm';
 import { Context as BlogContext } from '../context/BlogProvider';
 import { RootStackParamList } from '../models/Screens';
 
@@ -11,30 +12,23 @@ const EditScreen: React.FC<Props> = ({ navigation, route }) => {
   const { state, editPost } = useContext(BlogContext);
   const { id } = route.params;
   const post = state.find((post) => post.id === id);
-  const [title, setTitle] = useState(post?.title ?? '');
-  const [content, setContent] = useState(post?.content ?? '');
 
-  const addPostHandler = () => {
+  const editPostHandler = (title: string, content: string) => {
     editPost({ id, title, content }, () => {
-      navigation.navigate('Home');
+      navigation.pop();
     });
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Enter New Title:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={title}
-        onChangeText={setTitle}
+      <BlogPostForm
+        titleLabel="Enter New Title:"
+        contentLabel="Enter New Content:"
+        submitLabel="Save Blog Post"
+        onSubmit={editPostHandler}
+        initialTitle={post?.title}
+        initialContent={post?.content}
       />
-      <Text style={styles.label}>Enter New Content:</Text>
-      <TextInput
-        style={styles.textInput}
-        value={content}
-        onChangeText={setContent}
-      />
-      <Button title="Save Blog Post" onPress={addPostHandler} />
     </View>
   );
 };
@@ -45,16 +39,5 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 30,
     marginHorizontal: 20,
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 15,
-  },
-  textInput: {
-    borderColor: 'black',
-    borderWidth: 1,
-    marginBottom: 20,
-    padding: 5,
-    fontSize: 18,
   },
 });
