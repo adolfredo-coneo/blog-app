@@ -1,11 +1,12 @@
 import { Dispatch } from 'react';
 import { BlogPost } from '../models/Blog';
 import createDataContext, { Action } from './createDataContext';
+import jsonServer from '../api/jsonServer';
 
 const blogReducer = (state: BlogPost[], action: Action) => {
   switch (action.type) {
-    case 'ADD_POST':
-      return [...state, action.payload];
+    case 'GET_POSTS':
+      return action.payload;
     case 'EDIT_POST':
       return state.map((post) =>
         post.id === action.payload.id ? action.payload : post
@@ -17,18 +18,29 @@ const blogReducer = (state: BlogPost[], action: Action) => {
   }
 };
 
+const getPosts = (dispatch: Dispatch<Action>) => {
+  return async () => {
+    const response = await jsonServer.get('/blogposts');
+    dispatch({ type: 'GET_POSTS', payload: response.data });
+  };
+};
+
 const addPost = (dispatch: Dispatch<Action>) => {
-  return (post: BlogPost, callback?: () => void) => {
-    dispatch({
-      type: 'ADD_POST',
-      payload: post,
+  return async (post: BlogPost, callback?: () => void) => {
+    await jsonServer.post('/blogposts', {
+      title: post.title,
+      content: post.content,
     });
     if (callback) callback();
   };
 };
 
 const editPost = (dispatch: Dispatch<Action>) => {
-  return (post: BlogPost, callback?: () => void) => {
+  return async (post: BlogPost, callback?: () => void) => {
+    await jsonServer.put(`/blogposts/${post.id}`, {
+      title: post.title,
+      content: post.content,
+    });
     dispatch({
       type: 'EDIT_POST',
       payload: post,
@@ -38,22 +50,14 @@ const editPost = (dispatch: Dispatch<Action>) => {
 };
 
 const deletePost = (dispatch: Dispatch<Action>) => {
-  return (id: number) => {
-    dispatch({
-      type: 'DELETE_POST',
-      payload: id,
-    });
+  return async (id: number) => {
+    await jsonServer.delete(`/blogposts/${id}`);
+    dispatch({ type: 'DELETE_POST', payload: id });
   };
 };
 
 export const { Context, Provider } = createDataContext(
   blogReducer,
-  { addPost, editPost, deletePost },
-  [
-    {
-      id: 1,
-      title: 'Blog Post 1',
-      content: 'Content of blog post 1',
-    },
-  ]
+  { addPost, editPost, deletePost, getPosts },
+  []
 );

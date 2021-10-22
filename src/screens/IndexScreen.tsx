@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -15,7 +15,14 @@ import { RootStackParamList } from '../models/Screens';
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const IndexScreen: React.FC<Props> = ({ navigation }) => {
-  const { state, deletePost } = useContext(BlogContext);
+  const { state, deletePost, getPosts } = useContext(BlogContext);
+
+  useEffect(() => {
+    getPosts();
+    const unsubscribe = navigation.addListener('focus', () => getPosts());
+
+    return unsubscribe;
+  }, []);
 
   return (
     <View>
