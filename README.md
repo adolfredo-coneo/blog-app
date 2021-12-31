@@ -2,4 +2,4 @@
 
 React Native Testing App
 
-With Expo
+With Expo and React
